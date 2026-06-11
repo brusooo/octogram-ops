@@ -1,7 +1,7 @@
 # 🌟 Octogram
 
 > **Autonomous AI Agent for Hospital Operations Intelligence**
-> 
+>
 > Transforming hospital operations from reactive monitoring to proactive intelligence through automated data pipelines, AI-powered risk detection, and real-time operational alerts.
 
 Octogram is an intelligent operations monitoring platform that continuously synchronizes hospital ERP logs, predicts supply chain/stockout risks, manages critical schedules, generates alerts, and triggers Telegram notifications when critical operations are compromised.
@@ -11,6 +11,7 @@ Built for the **Rapid Agent Hackathon** integrating **Fivetran**, **BigQuery**, 
 ---
 
 ## 📖 Table of Contents
+
 - [The Problem & Solution](#-the-problem--the-solution)
 - [System Architecture](#-system-architecture)
 - [Hackathon Partner Integration](#-hackathon-partner-integration)
@@ -29,11 +30,11 @@ Built for the **Rapid Agent Hackathon** integrating **Fivetran**, **BigQuery**, 
 
 ## ⚠️ The Problem & 💡 The Solution
 
-| The Challenge (Reactive) | The Octogram Approach (Proactive) |
-| :--- | :--- |
-| **Silent Failures**: Inventory drops and delay risks go unnoticed until they disrupt patient care. | **Continuous Monitoring**: Scans database records 24/7 and flags anomalies immediately. |
-| **Reactive Procurement**: Buying teams react after stock is depleted, leading to emergency orders. | **Predictive Alerts**: Forecasts stock depletion timelines dynamically based on average usage. |
-| **Notification Gaps**: Key decision-makers are informed late via passive dashboards or emails. | **Immediate Push Alerts**: Dispatches critical & high-severity notifications directly via Telegram. |
+| The Challenge (Reactive)                                                                           | The Octogram Approach (Proactive)                                                                   |
+| :------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| **Silent Failures**: Inventory drops and delay risks go unnoticed until they disrupt patient care. | **Continuous Monitoring**: Scans database records 24/7 and flags anomalies immediately.             |
+| **Reactive Procurement**: Buying teams react after stock is depleted, leading to emergency orders. | **Predictive Alerts**: Forecasts stock depletion timelines dynamically based on average usage.      |
+| **Notification Gaps**: Key decision-makers are informed late via passive dashboards or emails.     | **Immediate Push Alerts**: Dispatches critical & high-severity notifications directly via Telegram. |
 
 ---
 
@@ -90,19 +91,24 @@ This architecture enables real-time operational intelligence without requiring m
 ## 🚀 Core Workflows
 
 ### 1. Data Synchronization
+
 Fivetran replicates incoming hospital transaction tables (such as inventory, staffing shift assignments, and pharmacy sales) from Neon PostgreSQL to Google BigQuery on a configured sync frequency.
 
 ### 2. Webhook Dispatch
+
 Once a Fivetran sync successfully finishes, Fivetran posts a `sync_end` payload to Octogram's webhook endpoint:
 `/api/webhooks/fivetran`
 
 ### 3. Alert Generation
+
 The Alert Engine runs a BigQuery `MERGE` query that:
+
 - Evaluates average daily sales for each medicine.
 - Analyzes remaining current stock.
 - Automatically inserts or updates active `Open` alerts with deterministic IDs (e.g. `medicine_stockout_5`) while preserving user-actioned `Resolved` and `Dismissed` statuses.
 
 ### 4. Push Notifications
+
 If any newly created or active alerts are marked as **Critical** or **High** priority, the notifier formats the details and triggers a Telegram message to the on-duty hospital operations staff.
 
 ---
@@ -113,15 +119,7 @@ If any newly created or active alerts are marked as **Critical** or **High** pri
 
 ![Operations Dashboard](./docs/dashboard-placeholder.png)
 
-*Main dashboard displaying operational alerts, AI-generated summaries, and pipeline health.*
-
----
-
-### Alert Management
-
-![Alert Management](./docs/alerts-placeholder.png)
-
-*Operational alerts with severity levels, status tracking, and resolution workflows.*
+_Main dashboard displaying operational alerts, AI-generated summaries, and pipeline health._
 
 ---
 
@@ -129,7 +127,7 @@ If any newly created or active alerts are marked as **Critical** or **High** pri
 
 ![Telegram Notification](./docs/telegram-placeholder.png)
 
-*Real-time notifications delivered to hospital operations teams.*
+_Real-time notifications delivered to hospital operations teams._
 
 ---
 
@@ -137,7 +135,7 @@ If any newly created or active alerts are marked as **Critical** or **High** pri
 
 ![Ask Octogram](./docs/chat-placeholder.png)
 
-*Natural language interface for querying operational data and risks.*
+_Natural language interface for querying operational data and risks._
 
 ---
 
@@ -149,12 +147,12 @@ By combining Fivetran data pipelines, BigQuery analytics, AI-powered reasoning, 
 
 ### Key Benefits
 
-* **Reduced medicine stockout risk**: Dynamic forecasts predict and prevent medicine runouts.
-* **Faster operational response**: Immediate push alerts reach decision makers in real time.
-* **Automated monitoring and alert generation**: Removes human overhead and polling delays.
-* **AI-assisted operational decision making**: Contextual briefs and conversational query support.
-* **Improved visibility into hospital operations**: Consolidated status tracking for alerts and sync health.
-* **Reduced dependency on manual monitoring**: Replaces complex check routines with event-driven actions.
+- **Reduced medicine stockout risk**: Dynamic forecasts predict and prevent medicine runouts.
+- **Faster operational response**: Immediate push alerts reach decision makers in real time.
+- **Automated monitoring and alert generation**: Removes human overhead and polling delays.
+- **AI-assisted operational decision making**: Contextual briefs and conversational query support.
+- **Improved visibility into hospital operations**: Consolidated status tracking for alerts and sync health.
+- **Reduced dependency on manual monitoring**: Replaces complex check routines with event-driven actions.
 
 ---
 
@@ -175,7 +173,7 @@ Create a `.env` file in the root directory:
 
 ```env
 # Google Cloud Platform Credentials
-GOOGLE_APPLICATION_CREDENTIALS="./onelinkto-7d2360f04cc0.json"
+GOOGLE_APPLICATION_CREDENTIALS="service.json"
 
 # Fivetran API credentials
 FIVETRAN_API_KEY="your-api-key"
@@ -206,20 +204,25 @@ To secure your webhook endpoint against unauthorized access:
 ## 🏃 Local Development
 
 ### 1. Install Dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 2. Run Next.js Server
+
 ```bash
 pnpm dev
 ```
 
 ### 3. Tunneling with ngrok
+
 Expose your local development port to make it accessible to Fivetran webhooks:
+
 ```bash
 ngrok http 3000
 ```
+
 Use the generated HTTPS tunnel URL to register your account-level or connector-level webhook endpoint in Fivetran:
 `https://<your-ngrok-subdomain>.ngrok-free.app/api/webhooks/fivetran`
 
@@ -237,28 +240,6 @@ Use the generated HTTPS tunnel URL to register your account-level or connector-l
 - [ ] **Supply Chain Risk Detection**: Factor in distributor shipping delays or manufacturing issues.
 - [ ] **Automated Procurement Workflows**: Trigger emergency courier runs based on real-time stocks.
 - [ ] **Executive Operations Reports**: Weekly summary digests compiled using Gemini flash reports.
-
----
-
-## 🎥 Demo
-
-### Demo Video
-[Watch Demo](YOUR_DEMO_VIDEO_LINK)
-
----
-
-### Presentation Slides
-[View Slides](YOUR_SLIDES_LINK)
-
----
-
-### Live Demo
-[Launch Application](YOUR_DEPLOYMENT_LINK)
-
----
-
-### Source Repository
-[GitHub Repository](YOUR_GITHUB_REPOSITORY_LINK)
 
 ---
 
